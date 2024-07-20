@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Placement Cell</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css"> <!-- Optional custom styles -->
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <header class="bg-gray-800 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold text-white">Placement Cell</a>
+            <div class="flex space-x-4">
+                <a href="/login" class="text-white hover:text-gray-400">Login</a>
+                <a href="/signup" class="text-white hover:text-gray-400">Sign Up</a>
+                <!-- Add more navigation links as needed -->
+            </div>
+        </nav>
+    </header>
+    <main class="container mx-auto p-6">
+        <!-- This is where the content of other EJS pages will be injected -->
+        <%- body %>
+    </main>
+    <footer class="bg-gray-800 p-4 text-center text-gray-400">
+        <p>&copy; <%= new Date().getFullYear() %> Placement Cell. All rights reserved.</p>
+    </footer>
+</body>
+</html>
