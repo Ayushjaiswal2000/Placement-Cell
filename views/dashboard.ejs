@@ -5,34 +5,285 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .notification {
+          position: fixed;
+          top: 5rem;
+          right: 1rem;
+          z-index: 1000;
+          transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        .notification.show {
+          transform: translateX(0);
+          opacity: 1;
+        }
+
+        .modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          display: none;
+          justify-content: center;
+          align-items: center;
+        }
+        .modal.show {
+          display: flex;
+        }
+        .modal-content {
+          background: #1b2430; /* bg-gray-900 */
+          color: #f9fafb; /* text-gray-100 */
+          padding: 2rem;
+          border-radius: 0.5rem;
+          max-width: 600px;
+          width: 90%;
+        }
+
+          /* Custom scrollbar styles */
+  .overflow-auto::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+
+  .overflow-auto::-webkit-scrollbar-thumb {
+    background-color: #4f9deb; /* Light blue color */
+    border-radius: 10px;
+  }
+
+  .overflow-auto::-webkit-scrollbar-track {
+    background: #2d2d2d; /* Track color */
+    border-radius: 10px;
+  }
+      </style>
 </head>
 <body class="bg-gray-900 text-gray-100">
   <header class="bg-gray-800 p-4">
     <nav class="container mx-auto flex justify-between items-center">
         <a href="/" class="text-2xl font-bold text-white">Placement Cell</a>
+        <div class="flex flex-col items-center flex-1">
+          <span class="text-lg text-white">Welcome, <%= userName %>!</span>
+        </div>
         <div class="flex space-x-6">
-            
-            <a href="/signup" class="text-white hover:text-gray-400">Add New Student </a>
-            <a href="/signup" class="text-white hover:text-gray-400">Add Interviews </a>
-            <a href="/signup" class="text-white hover:text-gray-400">Download Report </a>
-            <!-- Add more navigation links as needed -->
+          <a href="#" id="addStudentBtn" class="text-white hover:text-gray-400">Add New Student</a>
+            <a href="/signup" class="text-white hover:text-gray-400">Add Interviews</a>
+            <a href="/signup" class="text-white hover:text-gray-400">Download Report</a>
         </div>
     </nav>
 </header>
 <main class="container mx-auto p-6">
     <div class="flex flex-wrap gap-6">
       <!-- Students Div -->
-      <div class="flex-1 bg-gray-800 p-6 rounded-lg shadow-lg">
+      <div class="flex-1 bg-gray-800 p-6 rounded-lg shadow-lg overflow-auto" style="height: 600px;">
         <h2 class="text-2xl font-bold text-white">Students</h2>
-        <!-- Additional content for Students can be added here -->
+        <% if (students.length > 0) { %>
+          <% students.forEach(student => { %>
+            <div class="relative bg-gray-700 p-4 mt-4 rounded-lg mb-4">
+              <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-200"
+              onclick="showConfirmationModal('<%= student._id %>', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      
+              <h3 class="text-xl font-semibold text-white"><%= student.name %></h3>
+              <p class="text-gray-300 mt-2">College: <%= student.college %></p>
+              <p class="
+                <% if (student.status === 'not placed') { %>
+                  bg-red-500 text-white inline-block mt-2 px-2 py-1 rounded
+                <% } else { %>
+                  text-gray-300
+                <% } %>
+              ">
+                Status: <%= student.status || 'not placed' %>
+              </p>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p class="text-gray-300">No students found.</p>
+        <% } %>
       </div>
       
+      
+      
+      
+      
       <!-- Interviews Div -->
-      <div class="flex-1 bg-gray-800 p-6 rounded-lg shadow-lg">
+      <div class="flex-1 bg-gray-800 p-6 rounded-lg shadow-lg overflow-auto" style="height: 600px;">
         <h2 class="text-2xl font-bold text-white">Interviews</h2>
         <!-- Additional content for Interviews can be added here -->
       </div>
     </div>
   </main>
+  <div id="loginNotification" class="notification bg-green-600 text-white p-4 rounded-lg shadow-lg">
+    <p>Successfully logged in!</p>
+  </div>
+
+  <!-- Notification for New Student Addition -->
+  <div id="studentNotification" class="notification bg-green-600 text-white p-4 rounded-lg shadow-lg">
+    <p>New student added successfully!</p>
+  </div>
+  <div id="studentDeleteNotification" class="notification bg-red-600 text-white p-4 rounded-lg shadow-lg">
+    <p> Student Deleted successfully!</p>
+  </div>
+
+  <div id="studentModal" class="modal">
+    <div class="modal-content">
+      <h2 class="text-2xl font-bold mb-4">Add New Student</h2>
+      <form action="/add-student" method="POST">
+        <div class="mb-4">
+          <label for="name" class="block">Student Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter student name" class="mt-1 block w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-gray-100" required>
+        </div>
+        <div class="mb-4">
+          <label for="email" class="block">Student Email</label>
+          <input type="email" id="email" name="email" placeholder="Enter student email" class="mt-1 block w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-gray-100" required>
+        </div>
+        <div class="mb-4">
+          <label for="batch" class="block">Student Batch</label>
+          <input type="text" id="batch" name="batch" placeholder="Enter student batch" class="mt-1 block w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-gray-100" required>
+        </div>
+        <div class="mb-4">
+          <label for="college" class="block">College Name</label>
+          <input type="text" id="college" name="college" placeholder="Enter college name" class="mt-1 block w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-gray-100" required>
+        </div>
+        <div class="flex gap-4 mb-4">
+          <div class="flex-1">
+            <label for="dsa" class="block">DSA</label>
+            <input type="number" id="dsa" name="dsa" placeholder="Enter DSA score" class="mt-1 block w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-gray-100" required>
+          </div>
+          <div class="flex-1">
+            <label for="webdev" class="block">WebDev</label>
+            <input type="number" id="webdev" name="webdev" placeholder="Enter WebDev score" class="mt-1 block w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-gray-100" required>
+          </div>
+          <div class="flex-1">
+            <label for="react" class="block">React</label>
+            <input type="number" id="react" name="react" placeholder="Enter React score" class="mt-1 block w-full p-2 border border-gray-600 rounded-lg bg-gray-800 text-gray-100" required>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" id="closeModalBtn" class="mr-4 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Close</button>
+          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Add Student</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div id="confirmationModal" class="modal">
+    <div class="modal-content bg-gray-900 text-gray-100">
+      <h2 class="text-2xl font-bold mb-4">Confirm Action</h2>
+      <p class="mb-4">Are you sure you want to remove this student?</p>
+      <div class="flex justify-end gap-4">
+        <button id="cancelBtn" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Cancel</button>
+        <button id="confirmBtn" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <script>
+    // Function to show notification
+    function showNotification(notifications) {
+      const notification = document.getElementById(notifications);
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000); // Hide notification after 3 seconds
+    }
+
+    function toggleModal() {
+      const modal = document.getElementById('studentModal');
+      modal.classList.toggle('show');
+    }
+
+    document.getElementById('addStudentBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleModal();
+    });
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+      toggleModal();
+    });
+
+    let studentIdToRemove = null;
+  let parentElementToRemove = null;
+
+  function showConfirmationModal(id, element) {
+    studentIdToRemove = id;
+    parentElementToRemove = element.closest('.bg-gray-700'); // Adjust selector if needed
+    document.getElementById('confirmationModal').classList.add('show');
+  }
+
+  document.getElementById('confirmBtn').addEventListener('click', () => {
+    if (studentIdToRemove && parentElementToRemove) {
+      fetch(`/student/${studentIdToRemove}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+         // Show success message
+         showNotification('studentDeleteNotification');
+        parentElementToRemove.remove(); // Remove the parent element from DOM
+        document.getElementById('confirmationModal').classList.remove('show'); // Hide the modal
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while removing the student.');
+        document.getElementById('confirmationModal').classList.remove('show'); // Hide the modal
+        
+      });
+    }
+  });
+
+  document.getElementById('cancelBtn').addEventListener('click', () => {
+    document.getElementById('confirmationModal').classList.remove('show'); // Hide the modal
+  });
+    // Check for the success query parameter
+  
+
+  // Show notifications based on successType
+  function handleNotifications() {
+    // Check for the success query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const successType = urlParams.get('success');
+
+    // Check if sessionStorage has a notification already shown
+    const notificationShown = sessionStorage.getItem('notificationShown');
+
+    // Show notifications based on successType
+    if (successType === 'student' && notificationShown !== 'student') {
+        showNotification('studentNotification');
+        sessionStorage.setItem('notificationShown', 'student');
+    } else if (successType === 'login' && notificationShown !== 'login') {
+        showNotification('loginNotification');
+        sessionStorage.setItem('notificationShown', 'login');
+    } else if (successType === 'studentRemoved' && notificationShown !== 'studentRemoved') {
+        showNotification('studentDeleteNotification');
+        sessionStorage.setItem('notificationShown', 'studentRemoved');
+    }
+
+    // Remove the successType from the URL after showing the notification
+    if (successType) {
+        urlParams.delete('success');
+        window.history.replaceState({}, document.title, `${window.location.pathname}?${urlParams.toString()}`);
+    }
+}
+
+// Call the handleNotifications function on page load
+document.addEventListener('DOMContentLoaded', handleNotifications);
+
+  // Reset notification flag when the modal is shown
+  document.getElementById('addStudentBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('notificationShown');
+  });
+  </script>
 </body>
 </html>
