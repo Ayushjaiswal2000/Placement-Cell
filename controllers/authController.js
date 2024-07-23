@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import Student from '../models/student.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import Interview from '../models/interview.js';
 
 // Render login page with error if any
 
@@ -23,8 +24,9 @@ export const getDashboard = async (req, res) => {
 
     // Fetch students associated with the logged-in user
     const students = await Student.find({ userId: req.user._id });
+    const interviews = await Interview.find({ userId: req.user._id });
 
-    res.render('dashboard', { title: 'Dashboard', userName, showNotification, students });
+    res.render('dashboard', { title: 'Dashboard', userName, showNotification, students ,interviews});
   } catch (error) {
     console.error(error);
     res.redirect('/login');
