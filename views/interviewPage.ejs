@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <header class="bg-gray-800 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold text-white">Placement Cell</a>
+            <div class="flex flex-col items-center flex-1">
+              <span class="text-lg text-white">Welcome, <%= userName %>!</span>
+            </div>
+            <div class="flex space-x-6">
+                <a href="/signup" class="text-white hover:text-gray-400">Download Report</a>
+            </div>
+        </nav>
+    </header>
+  <main class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold text-white text-center">Interview Details</h2>
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mt-6">
+      <h3 class="text-xl font-semibold text-white">Company: <%= interview.company %></h3>
+      <p class="text-gray-300 mt-2">Date: <%= interview.date %></p>
+    </div>
+
+
+    <div class="flex flex-wrap gap-6">
+        <!-- Students Div -->
+        <div class="flex-1 bg-gray-800 p-6 rounded-lg shadow-lg overflow-auto mt-6" style="height: 600px;">
+            <h2 class="text-2xl font-bold text-white">Student List</h2>
+            <form id="student-form" class="bg-gray-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold text-gray-100 mb-4">Select Students</h2>
+                <% students.forEach(student => { %>
+                  <div class="flex items-center mt-4 p-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition">
+                    <input type="checkbox" id="<%= student._id %>" name="students" value="<%= student._id %>" class="mr-3 form-checkbox h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-0">
+                    <label for="<%= student._id %>" class="text-gray-300 text-lg"><%= student.name %></label>
+                  </div>
+                <% }); %>
+                <button type="submit" class="w-full bg-blue-500 text-white font-semibold px-4 py-2 mt-6 rounded-lg hover:bg-blue-700 transition">
+                  Add Student
+                </button>
+              </form>
+              
+          </div>
+        
+        
+        
+        
+        
+        <!-- Interviews Div -->
+        <div class="flex-1 bg-gray-800 p-6 rounded-lg shadow-lg overflow-auto mt-6" style="height: 600px;">
+          <h2 class="text-2xl font-bold text-white">Interviews Allocation </h2>
+
+          <p class="text-gray-300 mt-2">Details of the interview allocation will go here.</p>
+       
+        </div>
+        
+      </div>
+   
+  </main>
+</body>
+</html>

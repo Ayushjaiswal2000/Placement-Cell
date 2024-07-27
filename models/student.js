@@ -10,7 +10,7 @@ const studentSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true, // Ensures no duplicate emails
+     // Ensures no duplicate emails
   },
   batch: {
     type: String,
