@@ -2,7 +2,7 @@ import express from 'express';
 import { getLogin, getSignup, postLogin, postSignup,getDashboard } from '../controllers/authController.js';
 import { authenticate } from './../authMiddleware.js';
 import { postAddStudent , deleteStudent} from '../controllers/studentController.js';
-import { postAddInterview , deleteInterview} from '../controllers/interviewController.js';
+import { postAddInterview , deleteInterview,addStudentsToInterview} from '../controllers/interviewController.js';
 import Student from '../models/student.js';
 
 const router = express.Router();
@@ -30,6 +30,8 @@ router.get('/interview', authenticate, async (req, res) => {
       res.status(500).send('Server Error');
     }
   });
+
+  router.post('/interviews/add-students',authenticate, addStudentsToInterview);
   
 
 

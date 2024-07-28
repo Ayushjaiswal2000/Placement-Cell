@@ -132,7 +132,8 @@
         </div>
         <% if (interviews.length > 0) { %>
           <% interviews.forEach(interview => { %>
-            <a href="/interview?company=<%= interview.company %>&date=<%= interview.date %>" class="block relative bg-gray-700 p-4 mt-4 rounded-lg mb-4 hover:bg-gray-600 hover-translate">
+            <a href="/interview?company=<%= interview.company %>&date=<%= interview.date %>&id=<%= interview._id %>"
+              class="block relative bg-gray-700 p-4 mt-4 rounded-lg mb-4 hover:bg-gray-600 hover-translate">
               <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-200"
                 onclick="handleButtonClick(event, '<%= interview._id %>', this)">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

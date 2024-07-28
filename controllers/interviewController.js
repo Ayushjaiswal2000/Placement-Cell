@@ -43,3 +43,29 @@ export const deleteInterview = async (req, res) => {
         res.status(500).json({ message: 'Failed to delete interview', error });
     }
 };
+
+
+
+//add student to interviews 
+
+export const addStudentsToInterview = async (req, res) => {
+    const { interviewId, studentIds } = req.body;
+
+    try {
+        const interview = await Interview.findByIdAndUpdate(
+            interviewId,
+            { $addToSet: { students: { $each: studentIds } } },
+            { new: true }
+        );
+
+        if (!interview) {
+            return res.status(404).send('Interview not found');
+        }
+
+        res.redirect(`/interview?id=${interviewId}&success=studentAddedToInterview`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+};
+
