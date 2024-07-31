@@ -58,3 +58,26 @@ export const deleteStudent = async (req, res) => {
       res.status(500).json({ error: 'An error occurred while removing the student.' });
     }
   };
+
+
+  export const updateStudentStatus = async (req, res) => {
+    const { studentId, interviewId, status } = req.body;
+
+    try {
+        // Find the student by ID and update the status
+        const student = await Student.findByIdAndUpdate(
+            studentId,
+            { status },
+            { new: true }
+        );
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        res.redirect(`/interview?id=${interviewId}&success=studentUpdated`);
+    } catch (error) {
+        console.error('Error updating student status:', error);
+        res.status(500).json({ message: 'Failed to update student status', error });
+    }
+};

@@ -1,4 +1,5 @@
 import Interview from '../models/interview.js';
+import Student from '../models/student.js';
 
 // Controller function to add a new interview
 export const postAddInterview = async (req, res) => {
@@ -61,11 +62,34 @@ export const addStudentsToInterview = async (req, res) => {
         if (!interview) {
             return res.status(404).send('Interview not found');
         }
-
-        res.redirect(`/interview?id=${interviewId}&success=studentAddedToInterview`);
+       
+       
+        res.status(200).json({ redirectUrl: `/interview?id=${interviewId}&success=studentAddedToInterview` });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
     }
 };
 
+
+
+export const getInterviewDetails = async (req, res) => {
+    try {
+        const { id } = req.query; // Get the interview ID from query parameters
+        const userId = req.user._id;
+        const userName = req.user ? req.user.name : null;
+
+        // Fetch the interview by ID and populate the students field
+        const interview = await Interview.findById(id).populate('students');
+        console.log('Interview:', interview); // Log interview to debug
+
+        // Fetch all students for the user who are not already assigned to this interview
+        const availableStudents = await Student.find({ userId, _id: { $nin: interview.students } });
+
+        // Render the interviewPage template with interview, userName, and availableStudents data
+        res.render('interviewPage', { interview, userName, availableStudents });
+    } catch (error) {
+        console.error('Error fetching interview details:', error);
+        res.status(500).send('Server Error');
+    }
+};
