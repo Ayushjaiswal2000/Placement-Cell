@@ -7,6 +7,10 @@ import Interview from '../models/interview.js';
 // Render login page with error if any
 
 const saltRounds = 10;
+export const getHome = (req, res) => {
+  res.render('Home', { error: null });
+};
+
 export const getLogin = (req, res) => {
   res.render('login', { error: null });
 };
